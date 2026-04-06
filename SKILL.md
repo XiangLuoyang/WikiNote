@@ -78,6 +78,91 @@ summary: 一句话描述
 
 ## Workflows
 
+### Restructure (Migrate Existing Knowledge Base)
+
+When George asks to restructure or migrate an existing knowledge base:
+
+```
+1. ANALYZE
+   ├── List all existing files and folders
+   ├── Identify content types (entities, concepts, synthesis, etc.)
+   ├── Note frontmatter patterns (if any)
+   └── Document current structure
+
+2. PLAN
+   ├── Map old structure → new WikiNote structure
+   ├── Identify files to migrate to Raw-Sources/
+   ├── Identify files to migrate to Wiki/
+   ├── Plan cross-reference updates
+   └── Identify files to archive/delete
+
+3. EXECUTE
+   ├── Create new directory structure
+   ├── Migrate files with renaming if needed
+   ├── Add frontmatter to migrated files
+   ├── Create cross-references
+   └── Update SCHEMA.md if customized
+
+4. REPORT
+   ├── Output BEFORE structure (tree view)
+   ├── Output AFTER structure (tree view)
+   ├── List all changes made
+   ├── Highlight key decisions
+   └── Generate Use Case Guide
+```
+
+**Report Template:**
+
+```markdown
+# 📊 Restructure Report: {vault-name}
+
+## Before → After
+
+**Before:**
+```
+{your-old-structure}
+```
+
+**After:**
+```
+{your-new-structure}
+```
+
+## Changes Made
+
+| Action | File/Folder | Details |
+|--------|-------------|---------|
+| Move | `old/path` → `new/path` | Reason |
+| Rename | `old.md` → `entity-new.md` | Type: entity |
+| Create | `Wiki/` | New layer |
+| Delete | `old-folder/` | Obsolete |
+
+## Use Case Guide
+
+### For Daily Use
+
+**Adding new information:**
+1. [Step-by-step guide]
+2. [Step-by-step guide]
+
+**Finding information:**
+1. [Step-by-step guide]
+2. [Step-by-step guide]
+
+**Maintaining the wiki:**
+1. [Step-by-step guide]
+
+### Quick Reference
+
+| Intent | Action |
+|--------|--------|
+| New article to read | → Raw-Sources/ |
+| New concept/framework | → Wiki/concepts/ |
+| New brand/company/person | → Wiki/entities/ |
+| Comparison analysis | → Wiki/comparisons/ |
+| Deep research/analysis | → Wiki/synthesis/ |
+```
+
 ### Ingest (New Information)
 
 ```
