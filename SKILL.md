@@ -1,15 +1,9 @@
 ---
 name: wikinote
 description: |
-  WikiNote — LLM-native knowledge management skill based on the Karpathy LLM Wiki pattern.
-  This skill teaches an agent to maintain a personal wiki using a three-layer architecture:
-  1. **Raw-Sources/** — immutable original materials (articles, PDFs, web clips)
-  2. **Wiki/** — LLM-curated notes organized by type (entities, concepts, comparisons, synthesis)
-  3. **SCHEMA** — self-reinforcing conventions that guide all maintenance actions
-  When George asks about: managing notes, organizing knowledge, curating information,
-  searching wiki content, following up on previous discussions, or any knowledge workflow,
-  this skill should be loaded.
-  Core principle: Every valuable answer should be saved back to the wiki, not lost in chat.
+  LLM-native knowledge management skill based on the Karpathy LLM Wiki pattern.
+  Triggers when the user asks about: managing notes, organizing knowledge, curating information,
+  searching wiki content, following up on previous discussions, or any knowledge workflow.
 homepage: https://github.com/XiangLuoyang/WikiNote
 metadata:
   openclaw:
@@ -17,7 +11,7 @@ metadata:
     requires: {}
 ---
 
-# Nebula Wiki Schema
+# Wiki Schema
 
 **版本：** 2.1
 **创建时间：** 2026-04-06
@@ -25,7 +19,7 @@ metadata:
 **基于：** [Karpathy LLM Wiki Pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
 
 > [!abstract]
-> SCHEMA 是 Nebula Wiki 的核心规范文件，统一知识库的 **架构、命名、链接与质量标准**。
+> SCHEMA 是 Wiki 的核心规范文件，统一知识库的 **架构、命名、链接与质量标准**。
 > 详细参考：
 > - 页面写作指南（审美、骨架、反模式）→ tools/tool-page-guide.md
 > - 维护流程（索引、操作、节奏）→ tools/tool-wiki-workflow.md
@@ -37,7 +31,7 @@ metadata:
 > 知识是**持续累积的复合资产**，不是每次从零开始检索。
 > 人类的职责是 curation 和提问，LLM 的职责是维护、整理、链接与结构化表达。
 
-Nebula Wiki 的目标，不是把资料堆进去，而是把资料转化成：
+Wiki 的目标，不是把资料堆进去，而是把资料转化成：
 
 - 可引用的概念
 - 可回溯的事实
@@ -57,12 +51,12 @@ Nebula Wiki 的目标，不是把资料堆进去，而是把资料转化成：
 ## 三层架构
 
 ```text
-Obsidian-Nebula/
+Vault/
 │
 ├── Raw-Sources/          ← 【第一层】原始资料，只读不修改
-│   ├── 投资理财/
-│   ├── 全球供应链/
-│   └── 奇门遁甲/
+│   ├── {topic-a}/
+│   ├── {topic-b}/
+│   └── ...
 │
 ├── Wiki/                 ← 【第二层】LLM 维护的整理层
 │   ├── entities/         ← 实体页（人物、公司、产品、事件）
@@ -73,10 +67,7 @@ Obsidian-Nebula/
 │   ├── index/            ← Wiki 内部索引
 │   └── archive/          ← 归档区（沉寂/归档的页面）
 │
-├── 00-索引/              ← Vault 级目录入口
-├── Projects/             ← 项目资料与过程文档
-├── Daily/                ← 日记与临时记录
-└── Archive/              ← 长期归档区
+├── ...（其他 Vault 目录，按需组织）
 ```
 
 - **第一层（Raw-Sources）**：只读，保留原貌，不做重写，不混入长期判断。
@@ -179,7 +170,7 @@ summary: 一句话描述
 
 ## 知识生命周期
 
-Nebula 采用四阶段生命周期：
+Wiki 采用四阶段生命周期：
 
 ```text
 ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
@@ -217,12 +208,12 @@ Nebula 采用四阶段生命周期：
 
 | 判断条件 | 示例 | 说明 |
 |----------|------|------|
-| **带时间戳的记录** | `2026-Q1-渠道复盘.md` | 季度/月度数据快照 |
-| **会议纪要/出差报告** | `2026-04-15-代理商会议.md` | 特定日期的活动记录 |
-| **公司下发的政策文件** | `26-S1-考核政策.pdf` | 官方文件，了解管理要求 |
-| **一次性调研报告** | `东南亚市场调研-202603.md` | 完成后不再更新的研究 |
-| **数据快照** | `团单数据-2026-Q1.xlsx` | 时间锁定的数据分析 |
-| **合同/协议** | `代理商合同-XX公司.pdf` | 法律文件，不可篡改 |
+| **带时间戳的记录** | `2026-Q1-review.md` | 季度/月度数据快照 |
+| **会议纪要/出差报告** | `2026-04-15-team-meeting.md` | 特定日期的活动记录 |
+| **公司下发的政策文件** | `2026-S1-policy.pdf` | 官方文件，了解管理要求 |
+| **一次性调研报告** | `market-research-202603.md` | 完成后不再更新的研究 |
+| **数据快照** | `metrics-2026-Q1.xlsx` | 时间锁定的数据分析 |
+| **合同/协议** | `contract-vendor.pdf` | 法律文件，不可篡改 |
 
 ### 判断标准
 
@@ -230,8 +221,8 @@ Nebula 采用四阶段生命周期：
 
 1. **路径判断**：位于 `Raw-Sources/` 目录 → 默认为死文档
 2. **文件名判断**：包含以下模式 → 死文档
-   - 时间戳：`YYYY-MM-DD`、`YYYY-QX`、`26.S1`
-   - 关键词：`会议`、`纪要`、`出差`、`调研`、`团单`、`政策`、`合同`
+   - 时间戳：`YYYY-MM-DD`、`YYYY-QX`
+   - 关键词：`meeting`、`report`、`survey`、`policy`、`contract`（及其本地化表达）
 3. **Frontmatter 判断**：`immutable: true` → 死文档
 4. **人工判断**：以上都不满足时，询问用户
 
@@ -284,7 +275,7 @@ sources: [url1, url2]  # 原始来源
 ```
 Raw-Sources/（死文档）          Wiki/（活文档）
 ┌─────────────────┐            ┌─────────────────┐
-│ 2026-Q1-渠道复盘 │            │ concept-渠道管理 │
+│ 2026-Q1-review  │            │ concept-review   │
 │ - 数据快照      │  ──────→   │ - 提炼方法论    │
 │ - 会议记录      │  引用式提取 │ - 可持续更新    │
 │ - 不可修改      │            │ - 可链接复用    │
@@ -427,7 +418,7 @@ Wiki 页面之间默认使用双向链接。
 
 ### Restructure (Migrate Existing Knowledge Base)
 
-When George asks to restructure or migrate an existing knowledge base：
+When the user asks to restructure or migrate an existing knowledge base:
 
 ```
 1. ANALYZE
@@ -603,16 +594,16 @@ Trigger: Start of each session, or when contradictions are suspected.
 The index should be a graph of connections, not a tree.
 
 ```markdown
-# Nebula Index
+# Wiki Index
 
 ## Entities
-- [[Wiki/entities/科技/entity-ByteDance]] — 全球增长最快的互联网巨头
+- [[Wiki/entities/entity-ExampleCompany]] — A short description of this entity
 
 ## Concepts
-- [[Wiki/concepts/concept-奇门断局心法]] — 以权谋剧本推演视角重构奇门遁甲断局体系
+- [[Wiki/concepts/concept-ExampleConcept]] — A short description of this concept
 
 ## Synthesis
-- [[Wiki/synthesis/synthesis-全球供应链关键节点]] — 全球供应链核心节点的地缘政治分析
+- [[Wiki/synthesis/synthesis-ExampleTopic]] — A short description of this synthesis
 ```
 
 原则：
@@ -646,7 +637,7 @@ The index should be a graph of connections, not a tree.
 - 能长期维护
 - 能在未来继续生长，而不必推倒重来
 
-Nebula Wiki 追求的不是"每页都标准化"，而是：
+Wiki 追求的不是"每页都标准化"，而是：
 
 - 知识结构标准化
 - 页面表达成熟化

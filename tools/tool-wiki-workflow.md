@@ -16,8 +16,8 @@ summary: Wiki 的索引规范、操作流程与维护节奏。包含会话沉淀
 
 # Wiki 维护流程
 
-> 本文件从 [[SCHEMA]] 拆出，包含 Wiki 维护的操作规范。
-> 硬规范见 [[SCHEMA]]，页面写作指南见 [[Wiki/tools/tool-page-guide]]。
+> 本文件从 [WikiNote SKILL.md](../SKILL.md) 拆出，包含 Wiki 维护的操作规范。
+> 硬规范见 [SKILL.md](../SKILL.md)，页面写作指南见 [tool-page-guide.md](tool-page-guide.md)。
 
 ---
 
@@ -216,9 +216,9 @@ Index 用于帮助快速导航 Wiki，而不是简单做文件清单。
 
 ---
 
-## 相关
+## Related / 相关
 
-- [[SCHEMA]]
-- [[Wiki/tools/tool-page-guide]]
-- [[Wiki/index]]
-- [[log]]
+- [WikiNote SKILL.md](../SKILL.md) — Main schema
+- [tool-page-guide.md](tool-page-guide.md) — Page writing guide
+- Index page in Wiki/index/ — Vault navigation
+- log.md — Session log

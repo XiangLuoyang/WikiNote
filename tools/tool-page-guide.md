@@ -271,8 +271,8 @@ summary: 一句话描述
 
 ---
 
-## 相关
+## Related / 相关
 
-- [[SCHEMA]]
-- [[Wiki/tools/tool-wiki-workflow]]
-- [[Wiki/index]]
+- [WikiNote SKILL.md](../SKILL.md) — Main schema
+- [tool-wiki-workflow.md](tool-wiki-workflow.md) — Maintenance workflow
+- Index page in Wiki/index/ — Vault navigation
