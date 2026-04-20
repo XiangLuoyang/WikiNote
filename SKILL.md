@@ -13,7 +13,7 @@ metadata:
 
 # Wiki Schema
 
-**版本：** 2.1
+**版本：** 3.0
 **创建时间：** 2026-04-06
 **更新时间：** 2026-04-20
 **基于：** [Karpathy LLM Wiki Pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
@@ -53,10 +53,10 @@ Wiki 的目标，不是把资料堆进去，而是把资料转化成：
 ```text
 Vault/
 │
-├── Raw-Sources/          ← 【第一层】原始资料，只读不修改
-│   ├── {topic-a}/
-│   ├── {topic-b}/
-│   └── ...
+├── Sources/              ← 【第一层】所有不可修改的内容
+│   ├── {topic}/          ← 外部原始材料（PDF、网页、文章）
+│   ├── {topic}/          ← 外部原始材料
+│   └── archive/          ← 从 Wiki/Projects 退役的内容
 │
 ├── Wiki/                 ← 【第二层】LLM 维护的整理层
 │   ├── entities/         ← 实体页（人物、公司、产品、事件）
@@ -64,19 +64,18 @@ Vault/
 │   ├── comparisons/      ← 对比页（竞品对比、方案对比）
 │   ├── synthesis/        ← 综合分析页（专题研究、年度总结）
 │   ├── tools/            ← 工具页（提示词模板、工具配置）
-│   ├── index/            ← Wiki 内部索引
-│   └── archive/          ← 归档区（沉寂/归档的页面）
+│   └── index/            ← Wiki 内部索引
 │
-├── ...（其他 Vault 目录，按需组织）
+├── Projects/             ← 【第三层】有始有终的项目
+└── Daily/                ← 【第三层】每日记录
 ```
 
-- **第一层（Raw-Sources）**：只读，保留原貌，不做重写，不混入长期判断。
-- **第二层（Wiki）**：可复用、可链接、可更新、可演化、可被持续引用。
-- **第三层（入口与外围）**：区分过程与结论、临时与长期、原始输入与整理输出。
-- **Wiki/archive/**：沉寂期和归档期的页面。
+- **第一层（Sources）**：所有不可修改的内容。
+- **第二层（Wiki）**：可复用知识。
+- **第三层（Projects + Daily）**：有限期工作和每日记录。
 
 > [!warning]- 死文档保护
-> Raw-Sources 层的文件受 **死文档保护机制** 约束，详见下方 [死文档保护机制](#死文档保护机制)。
+> Sources 层的文件受 **死文档保护机制** 约束，详见下方 [死文档保护机制](#死文档保护机制)。
 
 ---
 
@@ -143,7 +142,7 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 type: entity | concept | comparison | synthesis | tool | project | note
 status: active | dormant | archived  # 生命周期状态（Wiki页面强制）
-immutable: true | false  # 死文档标记（Raw-Sources默认true）
+immutable: true | false  # 死文档标记（Sources默认true）
 tags: [tag1, tag2]
 aliases: [别名1, 别名2]
 sources: [url1, url2]  # 仅在需要时填写
@@ -160,7 +159,7 @@ summary: 一句话描述
 | updated | ✅ | 最近重要修改日期 |
 | type | ✅ | 页面类型 |
 | status | ✅ | 生命周期状态 |
-| immutable | ⚠️ | 死文档标记（Raw-Sources强制true，禁止修改） |
+| immutable | ⚠️ | 死文档标记（Sources强制true，禁止修改） |
 | tags | 推荐 | 主题标签 |
 | aliases | 可选 | 别名，便于搜索 |
 | sources | 可选 | 信息来源 |
@@ -186,19 +185,19 @@ Wiki 采用四阶段生命周期：
 |------|----------|
 | **active** | 30天内有更新 或 有 inbound links |
 | **dormant** | 30天以上无更新 且 inbound links < 3 |
-| **archived** | 明确不再维护，移至 Wiki/archive/ |
+| **archived** | 明确不再维护，移至 Sources/archive/ |
 
 ### 状态转换
 
 - 新建页面 → `active`
 - 30天无更新 → 标记 `dormant`
-- 确认不维护 → 移至 `Wiki/archive/`，标记 `archived`
+- 确认不维护 → 移至 `Sources/archive/`，标记 `archived`
 
 ---
 
 ## 死文档保护机制
 
-> **Raw-Sources 层的文件受死文档保护，严禁修改内容。** 修改死文档等于篡改历史。
+> **Sources 层的文件受死文档保护，严禁修改内容。** 修改死文档等于篡改历史。
 
 ### 死文档定义
 
@@ -219,7 +218,7 @@ Wiki 采用四阶段生命周期：
 
 **自动判断规则（优先级从高到低）**：
 
-1. **路径判断**：位于 `Raw-Sources/` 目录 → 默认为死文档
+1. **路径判断**：位于 `Sources/` 目录 → 默认为死文档
 2. **文件名判断**：包含以下模式 → 死文档
    - 时间戳：`YYYY-MM-DD`、`YYYY-QX`
    - 关键词：`meeting`、`report`、`survey`、`policy`、`contract`（及其本地化表达）
@@ -251,7 +250,7 @@ Wiki 采用四阶段生命周期：
 ```
 ✅ 正确做法：
   在 Wiki/ 中创建新页面，引用死文档：
-  "根据 [[Raw-Sources/XX会议纪要]] 的讨论..."
+  "根据 [[Sources/XX会议纪要]] 的讨论..."
 
 ❌ 错误做法：
   直接修改死文档，添加"新发现"或"更正"
@@ -273,7 +272,7 @@ sources: [url1, url2]  # 原始来源
 ### 与 Wiki 的关系
 
 ```
-Raw-Sources/（死文档）          Wiki/（活文档）
+Sources/（死文档）          Wiki/（活文档）
 ┌─────────────────┐            ┌─────────────────┐
 │ 2026-Q1-review  │            │ concept-review   │
 │ - 数据快照      │  ──────→   │ - 提炼方法论    │
@@ -406,7 +405,7 @@ When the user asks to restructure or migrate an existing knowledge base:
 
 2. PLAN
    ├── Map old structure → new WikiNote structure
-   ├── Identify files to migrate to Raw-Sources/
+   ├── Identify files to migrate to Sources/
    ├── Identify files to migrate to Wiki/
    ├── Plan cross-reference updates
    └── Identify files to archive/delete
@@ -471,7 +470,7 @@ When the user asks to restructure or migrate an existing knowledge base:
 
 | Intent | Action |
 |--------|--------|
-| New article to read | → Raw-Sources/ |
+| New article to read | → Sources/ |
 | New concept/framework | → Wiki/concepts/ |
 | New brand/company/person | → Wiki/entities/ |
 | Comparison analysis | → Wiki/comparisons/ |
@@ -482,10 +481,10 @@ When the user asks to restructure or migrate an existing knowledge base:
 
 ```
 1. 判断来源类型
-   ├── Raw-Source（网页、PDF、文章、访谈）→ 放入 Raw-Sources/
+   ├── Source（网页、PDF、文章、访谈）→ 放入 Sources/
    └── 直接讨论或内部判断 → 进入 Wiki/ 或 Projects/
 
-2. 如果是 Raw-Source
+2. 如果是 Source
    ├── 保存到对应分类
    ├── 提取关键信息
    ├── 更新相关 Wiki 页面（自动沉淀）
@@ -503,7 +502,7 @@ When the user asks to restructure or migrate an existing knowledge base:
 ```
 1. 先读 index.md 找相关页面
 2. 读相关 Wiki 页面
-3. 必要时回看 Raw-Sources
+3. 必要时回看 Sources
 4. 综合信息形成回答
 5. 如果回答本身有长期价值，则沉淀为新页面或更新现有页面（自动沉淀）
 ```
@@ -515,15 +514,15 @@ Trigger: Start of each session, or when contradictions are suspected.
 #### 基础检查项
 
 - **断链检查** — 扫描所有 `[[wikilink]]`，找出指向不存在文件的链接
-- **孤立页面** — 找出没有被任何其他文件链接的笔记（不含 Wiki/archive/）
+- **孤立页面** — 找出没有被任何其他文件链接的笔记（不含 Sources/archive/）
 - **索引完整性** — 检查各索引是否覆盖了对应文件夹下的所有活文档
 
 #### 增强检查项
 
 - **时效性检查** — `updated` 超过 90 天的 `active` 状态页面
 - **沉寂期标记** — 30天以上无更新的活跃笔记，建议标记 `dormant`
-- **归档预判** — 长期沉寂的页面，建议移至 Wiki/archive/
-- **死文档完整性** — Raw-Sources 文件是否有 `immutable: true`
+- **归档预判** — 长期沉寂的页面，建议移至 Sources/archive/
+- **死文档完整性** — Sources 文件是否有 `immutable: true`
 - **生命周期一致性** — 页面 status 是否符合实际状态
 - **Frontmatter 完整性** — 所有 Wiki/ 页面是否包含必填字段
 - **未归类文件** — vault 根目录非标准位置的 .md 文件
@@ -534,7 +533,7 @@ Trigger: Start of each session, or when contradictions are suspected.
 ## 🔍 Vault Lint 报告 (YYYY-MM-DD)
 
 ### 🛡️ 死文档检查 (N 处)
-- `Raw-Sources/XX.md` 缺少 `immutable: true` 标记
+- `Sources/XX.md` 缺少 `immutable: true` 标记
 - `Wiki/XX.md` 看起来是死文档，不应放在 Wiki/
 
 ### ❌ 断链 (N 处)
@@ -556,10 +555,10 @@ Trigger: Start of each session, or when contradictions are suspected.
 - `Wiki/entities/XX.md` 缺少必填字段：status
 
 ### 📂 未归类文件 (N 个)
-- `根目录/某文件.md` — 建议移动到 Raw-Sources/ 或 Wiki/
+- `根目录/某文件.md` — 建议移动到 Sources/ 或 Wiki/
 
 ### ✅ 健康项
-- 死文档保护：所有 Raw-Sources 文件均正确标记
+- 死文档保护：所有 Sources 文件均正确标记
 - 生命周期：98% 的页面状态符合实际
 - 索引覆盖：主要索引完整
 ```
