@@ -291,8 +291,6 @@ Sources/（死文档）          Wiki/（活文档）
 
 ## 会话沉淀流程
 
-**核心原则：AI 自动执行，用户可通过指令干预。**
-
 ### Log 记录机制
 
 > **每次会话结束后，AI 应自动记录到日志。**
@@ -305,40 +303,117 @@ Sources/（死文档）          Wiki/（活文档）
 
 ---
 
-### 会话沉淀流程
+## 实时捕获协议
 
-**核心原则：AI 自动执行，用户可通过指令干预。**
+> [!important] 核心机制（v3.1）
+> 取代旧版"会话沉淀"。旧版问题：触发条件模糊、无积累机制、实际几乎不触发。
+> 新版关键：**结构化信号检测 + 队列积累 + 3 种模式 + 强制检查点。**
+> 完整参考见 [tools/tool-capture-protocol.md](tools/tool-capture-protocol.md)。
 
-### 触发条件
+### 设计原则
 
-满足任一即自动沉淀：
+1. **检测信号，而非"判断价值"** — AI 按具体结构模式评估，不做模糊的价值判断
+2. **积累，而非立即行动** — 洞察收集到队列，批量呈现，不打断对话
+3. **模式驱动的用户控制** — 用户通过命令切换模式，不靠会话参数
+4. **强制执行检查点** — 3 个时刻 AI 必须评估队列，即使为空
 
-- 产出了包含结论/建议/策略的综合分析
-- 产出了可复用的框架、模型、对比表
-- 涉及多个数据点的交叉分析
+### 信号检测规则
 
-### 操作流程
+AI 在每次回复后扫描以下模式。匹配则加入捕获队列。
 
+**强信号（始终排队，除非 suppress 模式）：**
+
+| 信号 | 示例 | 目标类型 |
+|------|------|----------|
+| 定义了可命名概念的新框架或心智模型 | "四步分析法：锚点、偏差、催化剂、赔率" | `concept` |
+| 涉及 >2 维度的结构化比较 | 工具 X vs Y 对比表 | `comparison` |
+| 多源综合得出结论 | "综合 A、B 和 C，方法应该是…" | `synthesis` |
+| 排错发现产生可复用教训 | "根因是 Ollama batch size >10 导致超时" | `concept` 或 `tool` |
+| 架构或设计决策及其理由 | "选方案 B：分阶段方案，因为…" | `tool` 或 `concept` |
+| 挑战现有理解的发现 | "直觉上应该 X，但实际是 Y" | `concept` |
+
+**中等信号（propose 模式下排队，auto 模式下静默积累）：**
+
+| 信号 | 示例 | 目标类型 |
+|------|------|----------|
+| 实体概述（>4 个独立事实） | "Polymarket：2020年成立，已处理 $1B，基于 Polygon" | `entity` |
+| 可复用流程或配方 | "从 URL 提取数据的步骤…" | `tool` |
+| 重要的开放问题 | "尚不清楚 X 是否导致 Y" | 添加到已有页面 |
+
+**不捕获：**
+- 对已有文档的直接读取/复述
+- 用户可从聊天记录恢复的琐碎事实
+- 无结论的利弊思考、单源信息、闲聊
+
+### 3 种捕获模式
+
+| 模式 | 行为 | 切换方式 |
+|------|------|----------|
+| **`propose`**（默认） | 队列达阈值或命中检查点时呈现给用户 | 默认；`/capture propose` |
+| **`auto`** | 静默捕获并立即写入，每项写入后显示通知行 | `/capture auto` |
+| **`suppress`** | 不检测、不排队 | `/capture suppress`；或说"不写入" |
+
+模式不跨会话持久化。每个新会话从 `propose` 开始。
+
+### 队列积累与呈现
+
+**队列机制：** AI 在内存中维护有序的捕获候选列表。每个候选包含 `{signal_type, content_summary, suggested_target, suggested_action}`。
+
+**呈现触发器：**
+
+| 触发器 | 条件 | 动作 |
+|--------|------|------|
+| 阈值 | 队列达 3 项 | 立即呈现 |
+| 主题切换 | 用户换了话题 | 呈现队列（如有项） |
+| 阶段转换 | spec-first 阶段切换 | 队列 ≥2 时呈现 |
+| 会话结束 | 用户说"bye""done"或会话明显结束 | 呈现剩余队列 |
+| 手动 | 用户输入 `/capture` | 立即呈现队列 |
+
+**呈现格式：**
+
+```markdown
+📋 **Capture Queue** (N items)
+
+1. **[concept]** "洞察标题" → 创建 `Wiki/concepts/concept-Name`
+   > 一句话摘要。
+
+2. **[update]** "更新标题" → 更新 `Wiki/concepts/concept-Existing`
+   > 要添加的内容摘要。
+
+回复：`all` 全部接受，`1 3` 接受指定项，`edit 2` 修改，`drop` 清空队列。
 ```
-1. 识别 → 这段分析属于哪个现有笔记？
-2. 写入 → 直接更新目标笔记，加 (YYYY-MM-DD 更新) 时间戳
-3. 通知 → 告知用户「已更新到 [[XXX]]」
-4. 检查 → 更新相关索引
-```
 
-### 用户干预
+### 写入操作
 
-| 用户指令 | AI 行为 |
-|----------|---------|
-| "不写入" | 停止沉淀 |
-| "只提议" | 切换为提议模式 |
-| "记录" | 直接执行沉淀 |
+当项目被批准（或在 `auto` 模式下命中）时，AI 执行 7 步：
 
-### 不触发场景
+1. **识别目标** — 检查 Wiki 中是否有匹配页面。匹配则更新，否则创建。
+2. **写入内容** — 更新：追加带时间戳段落。创建：使用对应模板。
+3. **更新 Frontmatter** — 更新 `updated` 为今日。新页面填所有必填字段。
+4. **更新交叉引用** — 添加 `[[wikilinks]]` 到 ≥2 个相关页面。
+5. **更新索引** — 新页面向对应索引 section 添加条目。
+6. **写入日志** — 向 log.md 添加 `capture` 类型条目。
+7. **通知用户** — 打印：`✓ Captured to [[target]] (+log +index)`
 
-- 简单事实查询（"XX的GDP是多少"）
-- 文件操作指令（"帮我改个格式"）
-- 闲聊、确认类对话
+### 强制执行检查点
+
+AI 必须在以下时刻明确评估捕获队列：
+
+1. 提供实质性回复后（回复 >200 字或含代码/分析）
+2. 读取文件后（ingest 场景）
+3. 执行代码或完成任务后
+
+每次评估时内部检查：自上次检查以来是否有信号模式匹配？有则加入队列。队列达阈值则呈现。
+
+### /capture 命令
+
+| 命令 | 行为 |
+|------|------|
+| `/capture` | 立即呈现当前队列 |
+| `/capture [描述]` | 手动添加一个捕获项 |
+| `/capture auto` | 切换到 auto 模式 |
+| `/capture propose` | 切换到 propose 模式 |
+| `/capture suppress` | 切换到 suppress 模式 |
 
 ---
 
@@ -505,6 +580,7 @@ When the user asks to restructure or migrate an existing knowledge base:
 3. 必要时回看 Sources
 4. 综合信息形成回答
 5. 如果回答本身有长期价值，则沉淀为新页面或更新现有页面（自动沉淀）
+6. **Capture evaluation** — 评估回答是否命中捕获信号。如果命中，加入队列。
 ```
 
 ### Lint (Regular Maintenance)
@@ -593,11 +669,12 @@ The index should be a graph of connections, not a tree.
 
 ## Agent Behavior Rules
 
-1. **Proactive saving**: When providing a valuable answer, save it to wiki without being asked
+1. **Signal-driven capture**: After every substantive reply, evaluate against capture signal rules. Queue matches. Present at threshold or checkpoint.
 2. **Cross-linking**: Always check existing pages before creating new ones
 3. **No orphan pages**: Every new page should link to at least one existing page
 4. **Summarize before linking**: Don't just dump links; include context
 5. **Update not overwrite**: When updating pages, preserve valuable existing content
+6. **Log every capture**: Every approved capture must produce a log entry. No exceptions.
 
 ---
 
