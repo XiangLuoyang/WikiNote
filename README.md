@@ -4,11 +4,11 @@
 
 ## What
 
-WikiNote is a skill that teaches an AI agent to maintain a personal wiki using a **three-layer architecture**:
+WikiNote is a skill that teaches an AI agent to maintain a personal wiki using a **four-directory MECE architecture**:
 
 ```
-Raw-Sources/  →  Wiki/  →  Schema
-(Immutable)       (Curated)   (Conventions)
+Sources/  →  Wiki/  →  Projects/  +  Daily/
+(Immutable)  (Knowledge)  (Work)      (Records)
 ```
 
 ## Why
@@ -25,71 +25,84 @@ The insight from Karpathy:
 3. **Cross-references are maintained** automatically
 4. **LLM does all maintenance** — not the human
 
-## Three Layers
+## Four Directories
 
-| Layer | Purpose | LLM Action |
-|-------|---------|------------|
-| **Raw-Sources/** | Original materials (articles, PDFs, web clips) | Read only |
-| **Wiki/** | Curated knowledge (entities, concepts, synthesis) | Read + Write + Maintain |
-| **Schema** | Conventions that guide all actions | Follow + Evolve |
+| Directory | Purpose | LLM Action |
+|-----------|---------|------------|
+| **Sources/** | All immutable content (raw materials + archive) | Read only |
+| **Wiki/** | Curated knowledge (entities, concepts, synthesis, tools) | Read + Write + Maintain |
+| **Projects/** | Time-bounded work with clear start/end | Read + Write |
+| **Daily/** | Daily records and journals | Read + Write |
 
 ## Quick Start
-
-### For OpenClaw Users
-
-```bash
-npx skills add XiangLuoyang/wikinote -g -y
-```
 
 ### For Claude Code / OpenCode Users
 
 ```bash
 # Clone to skills directory
-git clone https://github.com/XiangLuoyang/WikiNote.git ~/wikinote
+git clone https://github.com/XiangLuoyang/WikiNote.git ~/.claude/skills/WikiNote
 ```
 
-## Workflow
+## Key Features
 
-### Ingest
-1. Receive new information
-2. Extract key points
-3. Update existing wiki page OR create new one
-4. Add cross-references
-5. Log the ingestion
+### Real-time Capture Protocol (v3.1)
 
-### Query
-1. Search wiki for relevant pages
-2. Read and synthesize
-3. Provide answer
-4. Save valuable answer back to wiki
+The AI continuously monitors conversations for valuable insights and automatically saves them to the wiki — no manual intervention needed.
 
-### Lint
-1. Check for contradictions
-2. Find outdated information
-3. Identify orphan pages
-4. Fix broken links
+**How it works:**
+1. AI scans every reply for **9 structured signal patterns** (new frameworks, comparisons, debugging lessons, etc.)
+2. Matches go into a **capture queue** (no interruption)
+3. Queue is presented at **thresholds or checkpoints** for user confirmation
+4. Approved items are written to wiki with frontmatter, cross-references, index entry, and log
+
+**Commands:**
+
+| Command | Effect |
+|---------|--------|
+| `/capture` | Show current capture queue |
+| `/capture [description]` | Manually add an item |
+| `/capture auto` | Silent capture mode (no confirmation needed) |
+| `/capture propose` | Default mode (batch confirmation) |
+| `/capture suppress` | Disable capture for this session |
+
+**Signal types:**
+
+| Signal | Target |
+|--------|--------|
+| New framework or mental model | `Wiki/concepts/` |
+| Structured comparison (>2 dimensions) | `Wiki/comparisons/` |
+| Multi-source synthesis with conclusion | `Wiki/synthesis/` |
+| Debugging discovery with reusable lesson | `Wiki/concepts/` or `Wiki/tools/` |
+| Architecture/design decision with rationale | `Wiki/tools/` or `Wiki/concepts/` |
+| Counter-intuitive finding | `Wiki/concepts/` |
+
+### Other Workflows
+
+**Ingest:** New information → extract → update wiki → log
+
+**Query:** Search wiki → read → synthesize → answer → capture if valuable
+
+**Lint** (`/linting`): Auto-fix frontmatter, naming, lifecycle status, and dead document protection across all files.
 
 ## File Structure
 
 ```
-Wiki/
-├── entities/         # Things: people, brands, events
-├── concepts/         # Ideas: methods, frameworks, theories
-├── comparisons/      # A vs B analyses
-└── synthesis/       # Deep dives: research, reviews
-
-Raw-Sources/         # Original materials (read-only)
-SCHEMA.md            # This skill's conventions
-log.md              # Ingestion and maintenance log
+WikiNote/
+├── SKILL.md                        # Core schema and conventions
+└── tools/
+    ├── tool-capture-protocol.md    # Complete capture reference
+    ├── tool-page-guide.md          # Page writing guide
+    ├── tool-wiki-workflow.md       # Maintenance workflows
+    └── tool-log-format.md          # Log format specification
 ```
 
 ## Related
 
 - [Karpathy LLM Wiki Gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
-- [Obsidian-Nebula Vault](https://github.com/XiangLuoyang/Obsidian-Nebula)
+- [spec-first](https://github.com/XiangLuoyang/spec-first) — Development workflow that integrates with WikiNote's capture protocol
 
 ---
 
-**License:** MIT  
-**Author:** George Hsiang  
+**License:** MIT
+**Author:** George Hsiang
 **Tag:** #wiki #knowledge-management #llm-wiki

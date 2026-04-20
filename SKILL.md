@@ -13,9 +13,9 @@ metadata:
 
 # Wiki Schema
 
-**版本：** 3.0
+**版本：** 3.1
 **创建时间：** 2026-04-06
-**更新时间：** 2026-04-20
+**更新时间：** 2026-04-21
 **基于：** [Karpathy LLM Wiki Pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
 
 > [!abstract]
