@@ -2,6 +2,7 @@
 name: wikinote
 description: |
   LLM-native knowledge management skill based on the Karpathy LLM Wiki pattern.
+  Includes layout principles derived from GitHub README community research (awesome-readme).
   Triggers when the user asks about: managing notes, organizing knowledge, curating information,
   searching wiki content, following up on previous discussions, or any knowledge workflow.
 homepage: https://github.com/XiangLuoyang/WikiNote
@@ -13,9 +14,9 @@ metadata:
 
 # Wiki Schema
 
-**版本：** 3.4
+**版本：** 3.5
 **创建时间：** 2026-04-06
-**更新时间：** 2026-05-05
+**更新时间：** 2026-05-06
 **基于：** [Karpathy LLM Wiki Pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
 
 > [!important] **AI 核心规则**
@@ -26,6 +27,7 @@ metadata:
 > 详细参考：
 > - 页面写作指南（审美、骨架、反模式）→ tools/tool-page-guide.md
 > - 维护流程（索引、操作、节奏）→ tools/tool-wiki-workflow.md
+> - 排版原则来源：GitHub README 社区研究（awesome-readme、Best-README-Template、readme-best-practices）
 
 ---
 
@@ -595,6 +597,70 @@ document_type: meeting | report | policy | snapshot | contract
 4. 执行修复
 5. 记录到日志（包括修复过程）
 ```
+
+---
+
+### 七、页面排版原则
+
+> **来源：GitHub README 社区研究**（awesome-readme、Best-README-Template、readme-best-practices、Day8/re-frame）
+>
+> README 写作和 Wiki 页面写作用的都是纯 Markdown，排版经验高度可迁移。详细参考 → tools/tool-page-guide.md
+
+#### 四条排版原则
+
+**1. 首屏原则（Above the Fold）**
+
+页面第一屏只保留：标题 + 摘要 +（可选）关键图表。
+
+```
+✅ 首屏应该只有：H1 标题、abstract callout、可选的一个关键视觉元素
+❌ 首屏不应出现：导航目录（除非长文 >2000 字）、多个 callout 争抢注意力、背景铺垫、元信息
+```
+
+判断标准：读者打开页面后 5 秒内，能否回答"这是什么"和"我要不要继续读"。
+
+**2. 分隔线克制**
+
+`---` 只用于大板块之间的主题切换（如：总览 → 详解 → 实践 → 相关）。
+
+- ✅ 两个章节讨论完全不同的主题 → 用
+- ✅ 从正文区切换到"相关链接"区 → 用
+- ❌ 相邻章节讨论同一主题的不同侧面 → 不用
+- ❌ 两个章节之间内容不足 5 行 → 不用
+- ❌ 每个小节后都加 → 最常见的审美问题
+
+**3. 视觉节奏（Visual Rhythm）**
+
+不同内容形态交替出现，避免同一种排版连续 3 次以上。
+
+| 节奏模式 | 说明 |
+|----------|------|
+| 段落 → 列表 | 自然段铺垫，再枚举要点 |
+| 列表 → 表格 | 先简述，再横向对比 |
+| 表格 → callout | 数据支撑，callout 总结判断 |
+
+反模式：连续 3 个以上章节全是列表、全是表格、全是 callout。
+
+**4. 认知漏斗（Cognitive Funnel）**
+
+页面引导读者从浅到深：
+
+```
+第一层：这是什么（abstract）
+第二层：为什么重要（核心论点）
+第三层：细节与证据（展开说明）
+第四层：延伸与关联（相关链接、开放问题）
+```
+
+每个层级是上一层的自然延伸，不是并列的重复表达。
+
+#### 排版检查项（新建或重写页面时）
+
+- [ ] 首屏：标题 + 摘要 + 可选图表，5 秒可回答"这是什么"
+- [ ] 分隔线：仅大板块切换，非每节都加
+- [ ] 节奏：无连续 3 个以上同结构章节
+- [ ] 漏斗：章节层层推进，非并列重复
+- [ ] 组件克制：去掉部分组件后页面依然成立
 
 ---
 
